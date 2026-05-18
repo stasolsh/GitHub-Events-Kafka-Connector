@@ -1,0 +1,12 @@
+{
+  "name": "github-events-source",
+  "config": {
+    "connector.class": "com.example.githubconnector.GithubEventsSourceConnector",
+    "tasks.max": "1",
+    "github.owner": "stasolsh",
+    "github.repo": "github-events-kafka-connector",
+    "github.token": "",
+    "topic": "github.events",
+    "poll.interval.ms": "30000"
+  }
+}
