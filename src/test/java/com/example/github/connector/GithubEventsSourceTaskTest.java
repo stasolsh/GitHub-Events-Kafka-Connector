@@ -1,4 +1,4 @@
-package com.example.githubconnector;
+package com.example.github.connector;
 
 import com.example.github.connector.GithubEventsConnectorConfig;
 import com.example.github.connector.GithubEventsSourceConnector;

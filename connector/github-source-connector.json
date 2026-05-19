@@ -1,7 +1,7 @@
 {
   "name": "github-events-source",
   "config": {
-    "connector.class": "com.example.githubconnector.GithubEventsSourceConnector",
+    "connector.class": "com.example.github.connector.GithubEventsSourceConnector",
     "tasks.max": "1",
     "github.owner": "stasolsh",
     "github.repo": "github-events-kafka-connector",

@@ -1,7 +1,7 @@
-FROM gradle:8.10.2-jdk21 AS build
+FROM gradle:8.10.2-jdk17 AS build
 WORKDIR /app
 COPY . .
-RUN gradle clean jar --no-daemon
+RUN gradle clean shadowJar --no-daemon
 
 FROM confluentinc/cp-kafka-connect:7.7.1
 
