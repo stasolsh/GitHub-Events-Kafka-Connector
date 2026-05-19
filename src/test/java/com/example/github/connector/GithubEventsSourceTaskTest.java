@@ -1,8 +1,4 @@
 package com.example.github.connector;
-
-import com.example.github.connector.GithubEventsConnectorConfig;
-import com.example.github.connector.GithubEventsSourceConnector;
-import com.example.github.connector.GithubEventsSourceTask;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -11,10 +7,10 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class GithubEventsSourceTaskTest {
+public class GithubEventsSourceTaskTest {
 
     @Test
-    void configShouldReadRequiredProperties() {
+    public void configShouldReadRequiredProperties() {
         Map<String, String> props = new HashMap<>();
         props.put(GithubEventsConnectorConfig.GITHUB_OWNER, "apache");
         props.put(GithubEventsConnectorConfig.GITHUB_REPO, "kafka");
@@ -30,7 +26,7 @@ class GithubEventsSourceTaskTest {
     }
 
     @Test
-    void connectorShouldReturnTaskClass() {
+    public void connectorShouldReturnTaskClass() {
         GithubEventsSourceConnector connector = new GithubEventsSourceConnector();
         assertNotNull(connector.taskClass());
         assertEquals(GithubEventsSourceTask.class, connector.taskClass());
