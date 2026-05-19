@@ -12,6 +12,12 @@ import java.io.IOException;
 import java.util.*;
 
 public class GithubEventsSourceTask extends SourceTask {
+    public GithubEventsSourceTask() {
+    }
+
+    GithubEventsSourceTask(GithubApiClient githubApiClient) {
+        this.githubApiClient = githubApiClient;
+    }
     private static final Logger log = LoggerFactory.getLogger(GithubEventsSourceTask.class);
 
     private static final String OFFSET_FIELD = "last_event_id";
@@ -43,7 +49,9 @@ public class GithubEventsSourceTask extends SourceTask {
 
         this.repoFullName = owner + "/" + repo;
         this.objectMapper = new ObjectMapper();
-        this.githubApiClient = new GithubApiClient(owner, repo, token);
+        if (this.githubApiClient == null) {
+            this.githubApiClient = new GithubApiClient(owner, repo, token);
+        }
 
         Map<String, Object> offset = context.offsetStorageReader().offset(sourcePartition());
         if (offset != null && offset.get(OFFSET_FIELD) != null) {
