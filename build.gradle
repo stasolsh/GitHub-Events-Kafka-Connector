@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'jacoco'
 }
 
 group = 'com.example'
@@ -20,7 +21,7 @@ dependencies {
     implementation 'org.apache.kafka:connect-api:3.9.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
     implementation 'org.slf4j:slf4j-api:2.0.13'
-
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.3'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.3'
     testImplementation 'org.mockito:mockito-core:5.12.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.12.0'
@@ -36,4 +37,31 @@ shadowJar {
     archiveBaseName.set('github-events-kafka-connector')
     archiveVersion.set('1.0.0')
     archiveClassifier.set('')
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(false)
+    }
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.70".toBigDecimal()
+            }
+        }
+    }
 }

@@ -1,0 +1,23 @@
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened, closed ]
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          java-version: 17
+          distribution: temurin
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+      - name: Run the Gradle verify phase
+        run: ./gradlew clean build --refresh-dependencies --no-daemon
+      - name: Upload coverage
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./build/reports/jacoco/test/jacocoTestReport.xml
