@@ -1,4 +1,4 @@
-package com.example.github.connector;
+package com.example.github.connector.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -8,12 +8,12 @@ public class GithubEvent {
     private String repoName;
     private String actorLogin;
     private String createdAt;
-    private JsonNode payload;
+    private Object payload;
 
     public GithubEvent() {
     }
 
-    public GithubEvent(String id, String type, String repoName, String actorLogin, String createdAt, JsonNode payload) {
+    public GithubEvent(String id, String type, String repoName, String actorLogin, String createdAt, Object payload) {
         this.id = id;
         this.type = type;
         this.repoName = repoName;
@@ -62,11 +62,11 @@ public class GithubEvent {
         this.createdAt = createdAt;
     }
 
-    public JsonNode getPayload() {
+    public Object getPayload() {
         return payload;
     }
 
-    public void setPayload(JsonNode payload) {
+    public void setPayload(Object payload) {
         this.payload = payload;
     }
 }

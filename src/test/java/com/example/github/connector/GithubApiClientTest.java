@@ -1,5 +1,6 @@
 package com.example.github.connector;
 
+import com.example.github.connector.dto.GithubEvent;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
