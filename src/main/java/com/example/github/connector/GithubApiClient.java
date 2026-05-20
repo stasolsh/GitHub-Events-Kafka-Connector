@@ -1,6 +1,7 @@
 package com.example.github.connector;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.example.github.connector.dto.GithubApiResponse;
+import com.example.github.connector.dto.GithubEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -50,18 +51,20 @@ public class GithubApiClient {
             throw new IOException("GitHub API returned status " + response.statusCode() + ": " + response.body());
         }
 
-        JsonNode root = objectMapper.readTree(response.body());
+        GithubApiResponse[] responses =
+                objectMapper.readValue(response.body(), GithubApiResponse[].class);
         List<GithubEvent> events = new ArrayList<>();
 
-        for (JsonNode node : root) {
-            String id = node.path("id").asText();
-            String type = node.path("type").asText();
-            String repoName = node.path("repo").path("name").asText();
-            String actorLogin = node.path("actor").path("login").asText();
-            String createdAt = node.path("created_at").asText();
-            JsonNode payload = node.path("payload");
+        for (GithubApiResponse responseItem : responses) {
 
-            events.add(new GithubEvent(id, type, repoName, actorLogin, createdAt, payload));
+            events.add(new GithubEvent(
+                    responseItem.getId(),
+                    responseItem.getType(),
+                    responseItem.getRepo() != null ? responseItem.getRepo().getName() : null,
+                    responseItem.getActor() != null ? responseItem.getActor().getLogin() : null,
+                    responseItem.getCreatedAt(),
+                    responseItem.getPayload()
+            ));
         }
 
         return events;

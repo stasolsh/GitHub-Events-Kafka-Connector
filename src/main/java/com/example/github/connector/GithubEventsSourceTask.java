@@ -1,5 +1,6 @@
 package com.example.github.connector;
 
+import com.example.github.connector.dto.GithubEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.connect.data.Schema;
