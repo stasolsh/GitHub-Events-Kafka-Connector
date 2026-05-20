@@ -13,12 +13,11 @@ import java.io.IOException;
 import java.util.*;
 
 public class GithubEventsSourceTask extends SourceTask {
-    public GithubEventsSourceTask() {
-    }
 
     GithubEventsSourceTask(GithubApiClient githubApiClient) {
         this.githubApiClient = githubApiClient;
     }
+
     private static final Logger log = LoggerFactory.getLogger(GithubEventsSourceTask.class);
 
     private static final String OFFSET_FIELD = "last_event_id";
@@ -84,21 +83,22 @@ public class GithubEventsSourceTask extends SourceTask {
         // GitHub returns newest first. For Kafka, publish oldest first.
         newEvents.sort(Comparator.comparing(GithubEvent::getId));
 
+        return getSourceRecords(newEvents);
+    }
+
+    private List<SourceRecord> getSourceRecords(List<GithubEvent> newEvents) {
         List<SourceRecord> records = new ArrayList<>();
 
         for (GithubEvent event : newEvents) {
-            String value = toJson(event);
-            Map<String, Object> sourceOffset = sourceOffset(event.getId());
-
             SourceRecord record = new SourceRecord(
                     sourcePartition(),
-                    sourceOffset,
+                    sourceOffset(event.getId()),
                     topic,
                     null,
                     Schema.STRING_SCHEMA,
                     event.getId(),
                     Schema.STRING_SCHEMA,
-                    value
+                    toJson(event)
             );
 
             records.add(record);

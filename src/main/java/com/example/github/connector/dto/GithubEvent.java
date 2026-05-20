@@ -1,7 +1,5 @@
 package com.example.github.connector.dto;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 public class GithubEvent {
     private String id;
     private String type;
