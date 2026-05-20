@@ -32,7 +32,7 @@ public class GithubApiClient {
     }
 
     public List<GithubEvent> fetchEvents() throws IOException, InterruptedException {
-        String url = "https://api.github.com/repos/" + owner + "/" + repo + "/events";
+        String url = "https://api.github.com/repos/%s/%s/events".formatted(owner, repo);
 
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -53,10 +53,13 @@ public class GithubApiClient {
 
         GithubApiResponse[] responses =
                 objectMapper.readValue(response.body(), GithubApiResponse[].class);
+
+        return getGithubEvents(responses);
+    }
+
+    private static List<GithubEvent> getGithubEvents(GithubApiResponse[] responses) {
         List<GithubEvent> events = new ArrayList<>();
-
         for (GithubApiResponse responseItem : responses) {
-
             events.add(new GithubEvent(
                     responseItem.getId(),
                     responseItem.getType(),
@@ -66,7 +69,6 @@ public class GithubApiClient {
                     responseItem.getPayload()
             ));
         }
-
         return events;
     }
 }
