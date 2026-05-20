@@ -5,7 +5,7 @@
 [![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-3.9-black.svg?logo=apachekafka)](https://kafka.apache.org/)
 [![Kafka Connect](https://img.shields.io/badge/Kafka%20Connect-Source%20Connector-blue.svg)](https://kafka.apache.org/documentation/#connect)
 [![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED.svg?logo=docker)](https://www.docker.com/)
-[![GitHub Actions](https://img.shields.io/github/actions/workflow/status/stasolsh/github-events-kafka-connector/custom-action.yml?branch=master)](https://github.com/stasolsh/github-events-kafka-connector/actions)
+![Build](https://github.com/stasolsh/github-events-kafka-connector/actions/workflows/custom-action.yml/badge.svg)
 [![Codecov](https://img.shields.io/codecov/c/github/stasolsh/github-events-kafka-connector)](https://codecov.io/gh/stasolsh/github-events-kafka-connector)
 [![License](https://img.shields.io/github/license/stasolsh/github-events-kafka-connector)](LICENSE)
 [![Issues](https://img.shields.io/github/issues/stasolsh/github-events-kafka-connector)](https://github.com/stasolsh/github-events-kafka-connector/issues)
