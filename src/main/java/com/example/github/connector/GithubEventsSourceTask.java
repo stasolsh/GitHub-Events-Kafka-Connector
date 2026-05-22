@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.*;
 
 public class GithubEventsSourceTask extends SourceTask {
+    public GithubEventsSourceTask() {
+    }
 
     GithubEventsSourceTask(GithubApiClient githubApiClient) {
         this.githubApiClient = githubApiClient;
