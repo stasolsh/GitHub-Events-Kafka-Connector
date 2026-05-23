@@ -29,6 +29,9 @@ public class GithubEventsSourceTask extends SourceTask {
     private String repoFullName;
     private long pollIntervalMs;
     private String lastEventId;
+    private int retryMaxAttempts;
+    private long retryInitialBackoffMs;
+    private long retryMaxBackoffMs;
 
     @Override
     public String version() {
@@ -45,7 +48,9 @@ public class GithubEventsSourceTask extends SourceTask {
 
         this.topic = config.getString(GithubEventsConnectorConfig.TOPIC);
         this.pollIntervalMs = config.getLong(GithubEventsConnectorConfig.POLL_INTERVAL_MS);
-
+        this.retryMaxAttempts = config.getInt(GithubEventsConnectorConfig.RETRY_MAX_ATTEMPTS);
+        this.retryInitialBackoffMs = config.getLong(GithubEventsConnectorConfig.RETRY_INITIAL_BACKOFF_MS);
+        this.retryMaxBackoffMs = config.getLong(GithubEventsConnectorConfig.RETRY_MAX_BACKOFF_MS);
         this.repoFullName = owner + "/" + repo;
         if (this.githubApiClient == null) {
             this.githubApiClient = new GithubApiClient(owner, repo, token);
@@ -64,14 +69,7 @@ public class GithubEventsSourceTask extends SourceTask {
     public List<SourceRecord> poll() throws InterruptedException {
         Thread.sleep(pollIntervalMs);
 
-        List<GithubEvent> events;
-        try {
-            events = githubApiClient.fetchEvents();
-        } catch (IOException e) {
-            log.error("Failed to fetch GitHub events", e);
-            return Collections.emptyList();
-        }
-
+        List<GithubEvent> events = fetchEventsWithRetry();
         List<GithubEvent> newEvents = filterNewEvents(events);
 
         if (newEvents.isEmpty()) {
@@ -82,6 +80,34 @@ public class GithubEventsSourceTask extends SourceTask {
         newEvents.sort(Comparator.comparing(GithubEvent::getId));
 
         return getSourceRecords(newEvents);
+    }
+
+    private List<GithubEvent> fetchEventsWithRetry() throws InterruptedException {
+        int attempt = 0;
+        long backoff = retryInitialBackoffMs;
+
+        while (true) {
+            try {
+                return githubApiClient.fetchEvents();
+            } catch (IOException e) {
+                attempt++;
+
+                if (attempt >= retryMaxAttempts) {
+                    log.error("GitHub API failed after {} attempts", attempt, e);
+                    return Collections.emptyList();
+                }
+
+                log.warn("GitHub API failed. Retry attempt {}/{} in {} ms",
+                        attempt,
+                        retryMaxAttempts,
+                        backoff,
+                        e
+                );
+
+                Thread.sleep(backoff);
+                backoff = Math.min(backoff * 2, retryMaxBackoffMs);
+            }
+        }
     }
 
     private List<SourceRecord> getSourceRecords(List<GithubEvent> newEvents) {

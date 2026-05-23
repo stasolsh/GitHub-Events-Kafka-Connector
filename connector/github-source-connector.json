@@ -7,6 +7,9 @@
     "github.repo": "github-events-kafka-connector",
     "github.token": "",
     "topic": "github.events",
-    "poll.interval.ms": "30000"
+    "poll.interval.ms": "30000",
+    "retry.max.attempts": "3",
+    "retry.initial.backoff.ms": "1000",
+    "retry.max.backoff.ms": "10000"
   }
 }

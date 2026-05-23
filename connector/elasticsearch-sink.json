@@ -7,6 +7,16 @@
     "connection.url": "http://elasticsearch:9200",
     "key.ignore": "true",
     "schema.ignore": "true",
-    "behavior.on.null.values": "ignore"
+    "behavior.on.null.values": "ignore",
+    "max.retries": "10",
+    "retry.backoff.ms": "1000",
+    "errors.tolerance": "all",
+    "errors.retry.timeout": "300000",
+    "errors.retry.delay.max.ms": "60000",
+    "errors.log.enable": "true",
+    "errors.log.include.messages": "true",
+    "errors.deadletterqueue.topic.name": "github.events.dlq",
+    "errors.deadletterqueue.topic.replication.factor": "1",
+    "errors.deadletterqueue.context.headers.enable": "true"
   }
 }

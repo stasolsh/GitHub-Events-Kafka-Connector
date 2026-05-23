@@ -12,6 +12,9 @@ public class GithubEventsConnectorConfig extends AbstractConfig {
     public static final String GITHUB_TOKEN = "github.token";
     public static final String TOPIC = "topic";
     public static final String POLL_INTERVAL_MS = "poll.interval.ms";
+    public static final String RETRY_MAX_ATTEMPTS = "retry.max.attempts";
+    public static final String RETRY_INITIAL_BACKOFF_MS = "retry.initial.backoff.ms";
+    public static final String RETRY_MAX_BACKOFF_MS = "retry.max.backoff.ms";
 
     public static final ConfigDef CONFIG_DEF = new ConfigDef()
             .define(
@@ -46,6 +49,27 @@ public class GithubEventsConnectorConfig extends AbstractConfig {
                     30_000L,
                     ConfigDef.Importance.MEDIUM,
                     "Polling interval in milliseconds"
+            )
+            .define(
+                    RETRY_MAX_ATTEMPTS,
+                    ConfigDef.Type.INT,
+                    3,
+                    ConfigDef.Importance.MEDIUM,
+                    "Max retry attempts"
+            )
+            .define(
+                    RETRY_INITIAL_BACKOFF_MS,
+                    ConfigDef.Type.LONG,
+                    1000L,
+                    ConfigDef.Importance.MEDIUM,
+                    "Initial retry backoff"
+            )
+            .define(
+                    RETRY_MAX_BACKOFF_MS,
+                    ConfigDef.Type.LONG,
+                    10000L,
+                    ConfigDef.Importance.MEDIUM,
+                    "Max retry backoff"
             );
 
     public GithubEventsConnectorConfig(Map<String, String> props) {
