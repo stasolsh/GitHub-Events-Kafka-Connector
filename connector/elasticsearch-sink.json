@@ -7,8 +7,6 @@
     "connection.url": "http://elasticsearch:9200",
     "key.ignore": "true",
     "schema.ignore": "true",
-    "type.name": "_doc",
-    "value.converter": "org.apache.kafka.connect.storage.StringConverter",
     "behavior.on.null.values": "ignore"
   }
 }

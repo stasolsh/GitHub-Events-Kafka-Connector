@@ -1,8 +1,6 @@
 package com.example.github.connector;
 
 import com.example.github.connector.dto.GithubEvent;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.source.SourceTask;
@@ -27,7 +25,6 @@ public class GithubEventsSourceTask extends SourceTask {
 
     private GithubEventsConnectorConfig config;
     private GithubApiClient githubApiClient;
-    private ObjectMapper objectMapper;
     private String topic;
     private String repoFullName;
     private long pollIntervalMs;
@@ -50,7 +47,6 @@ public class GithubEventsSourceTask extends SourceTask {
         this.pollIntervalMs = config.getLong(GithubEventsConnectorConfig.POLL_INTERVAL_MS);
 
         this.repoFullName = owner + "/" + repo;
-        this.objectMapper = new ObjectMapper();
         if (this.githubApiClient == null) {
             this.githubApiClient = new GithubApiClient(owner, repo, token);
         }
@@ -99,8 +95,8 @@ public class GithubEventsSourceTask extends SourceTask {
                     null,
                     Schema.STRING_SCHEMA,
                     event.getId(),
-                    Schema.STRING_SCHEMA,
-                    toJson(event)
+                    null,
+                    toMap(event)
             );
 
             records.add(record);
@@ -126,9 +122,9 @@ public class GithubEventsSourceTask extends SourceTask {
         }
         return result;
     }
-
-    private String toJson(GithubEvent event) {
+    private Map<String, Object> toMap(GithubEvent event) {
         Map<String, Object> json = new HashMap<>();
+
         json.put("github_event_id", event.getId());
         json.put("type", event.getType());
         json.put("repo", event.getRepoName());
@@ -136,11 +132,7 @@ public class GithubEventsSourceTask extends SourceTask {
         json.put("created_at", event.getCreatedAt());
         json.put("payload", event.getPayload());
 
-        try {
-            return objectMapper.writeValueAsString(json);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to serialize GitHub event", e);
-        }
+        return json;
     }
 
     private Map<String, String> sourcePartition() {
