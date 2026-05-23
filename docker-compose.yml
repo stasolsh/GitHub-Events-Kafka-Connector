@@ -89,6 +89,17 @@ services:
       - elasticsearch
     networks:
       - kafka-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - kafka-network
+
 networks:
   kafka-network:
     driver: bridge
