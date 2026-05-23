@@ -229,3 +229,162 @@ GitHub Actions pipeline includes:
 - Codecov upload
 
 ---
+## Elasticsearch Integration
+
+The project includes a Kafka Sink Connector that streams GitHub events from Kafka into Elasticsearch.
+
+### Extended Architecture
+
+```text
+GitHub API
+    ↓
+Custom Source Connector
+    ↓
+Kafka Topic (github.events)
+    ↓
+Elasticsearch Sink Connector
+    ↓
+Elasticsearch
+    ↓
+Kibana Dashboards
+```
+
+---
+
+## Elasticsearch & Kibana
+
+The project provides a complete local observability stack:
+
+- Apache Kafka
+- Kafka Connect
+- Elasticsearch
+- Kibana
+
+### Access URLs
+
+| Service | URL |
+|---|---|
+| Kafka Connect REST API | http://localhost:8083 |
+| Elasticsearch | http://localhost:9200 |
+| Kibana | http://localhost:5601 |
+
+---
+
+## Kafka Connect Converters
+
+The connector uses Kafka Connect JSON converters for structured event streaming.
+
+```yaml
+CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+
+CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+```
+
+This allows Elasticsearch Sink Connector to index GitHub events as JSON documents.
+
+---
+
+## Elasticsearch Sink Connector
+
+### Verify Elasticsearch Sink Connector
+
+```bash
+curl http://localhost:8083/connector-plugins
+```
+
+Expected:
+
+```json
+[
+  {
+    "class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+    "type": "sink"
+  }
+]
+```
+
+---
+
+### Register Elasticsearch Sink Connector
+
+Create connector:
+
+```bash
+curl -X POST http://localhost:8083/connectors \
+-H "Content-Type: application/json" \
+-d @connector/elasticsearch-sink.json
+```
+
+---
+
+### Elasticsearch Sink Configuration
+
+```json
+{
+  "name": "github-events-elasticsearch-sink",
+  "config": {
+    "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+    "tasks.max": "1",
+    "topics": "github.events",
+    "connection.url": "http://elasticsearch:9200",
+    "key.ignore": "true",
+    "schema.ignore": "true",
+    "behavior.on.null.values": "ignore"
+  }
+}
+```
+
+---
+
+## Verify Indexed Events
+
+### Query Elasticsearch
+
+```bash
+curl http://localhost:9200/github.events/_search?pretty
+```
+
+Expected response:
+
+```json
+{
+  "hits": {
+    "hits": [
+      {
+        "_source": {
+          "github_event_id": "123456789",
+          "type": "PushEvent",
+          "repo": "apache/kafka",
+          "actor": "developer"
+        }
+      }
+    ]
+  }
+}
+```
+
+---
+
+## Kibana Dashboard
+
+Open Kibana:
+
+```text
+http://localhost:5601
+```
+
+Create Data View:
+
+```text
+github.events*
+```
+
+Then explore GitHub event streams in:
+
+```text
+Discover
+```
+
+---
