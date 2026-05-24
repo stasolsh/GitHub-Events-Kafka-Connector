@@ -103,6 +103,14 @@ services:
     networks:
       - kafka-network
 
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - kafka-network
+
 networks:
   kafka-network:
     driver: bridge
