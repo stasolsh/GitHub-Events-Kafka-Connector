@@ -54,6 +54,7 @@ services:
       CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
       CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect
       CONNECT_PLUGIN_PATH: /usr/share/java/github-events-kafka-connector,/usr/share/java,/usr/share/confluent-hub-components
+      KAFKA_OPTS: "-javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent.jar=9404:/usr/share/jmx_exporter/config.yml"
     command:
       - bash
       - -c
@@ -62,6 +63,8 @@ services:
         /etc/confluent/docker/run
     volumes:
       - ./build/libs/github-events-kafka-connector-1.0.0.jar:/usr/share/java/github-events-kafka-connector/github-events-kafka-connector-1.0.0.jar
+      - ./jmx/jmx_prometheus_javaagent.jar:/usr/share/jmx_exporter/jmx_prometheus_javaagent.jar
+      - ./jmx/config.yml:/usr/share/jmx_exporter/config.yml
     networks:
       - kafka-network
 
