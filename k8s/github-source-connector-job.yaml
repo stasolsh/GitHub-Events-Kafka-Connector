@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: register-github-source-connector
+  namespace: github-events
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: register
+          image: curlimages/curl:latest
+          command:
+            - sh
+            - -c
+            - |
+              sleep 20
+              curl -X POST http://kafka-connect:8083/connectors \
+                -H "Content-Type: application/json" \
+                -d '{
+                  "name": "github-events-source",
+                  "config": {
+                    "connector.class": "com.example.github.connector.GithubEventsSourceConnector",
+                    "tasks.max": "1",
+                    "github.owner": "stasolsh",
+                    "github.repo": "github-events-kafka-connector",
+                    "github.token": "",
+                    "topic": "github.events",
+                    "poll.interval.ms": "30000",
+                    "retry.max.attempts": "3",
+                    "retry.initial.backoff.ms": "1000",
+                    "retry.max.backoff.ms": "10000"
+                  }
+                }'
