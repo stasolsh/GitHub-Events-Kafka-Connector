@@ -1,0 +1,38 @@
+{{- if .Values.connectors.githubSource.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: register-github-source-connector
+  namespace: {{ include "github-events-platform.namespace" . }}
+  labels:
+    {{- include "github-events-platform.labels" . | nindent 4 }}
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: register
+          image: {{ .Values.jobs.curlImage | quote }}
+          command:
+            - sh
+            - -c
+            - |
+              sleep {{ .Values.jobs.githubSourceSleepSeconds }}
+              curl -X POST http://kafka-connect:8083/connectors \
+                -H "Content-Type: application/json" \
+                -d '{
+                  "name": "{{ .Values.connectors.githubSource.name }}",
+                  "config": {
+                    "connector.class": "com.example.github.connector.GithubEventsSourceConnector",
+                    "tasks.max": "1",
+                    "github.owner": "{{ .Values.connectors.githubSource.owner }}",
+                    "github.repo": "{{ .Values.connectors.githubSource.repo }}",
+                    "github.token": "{{ .Values.connectors.githubSource.token }}",
+                    "topic": "{{ .Values.connectors.githubSource.topic }}",
+                    "poll.interval.ms": "{{ .Values.connectors.githubSource.pollIntervalMs }}",
+                    "retry.max.attempts": "{{ .Values.connectors.githubSource.retry.maxAttempts }}",
+                    "retry.initial.backoff.ms": "{{ .Values.connectors.githubSource.retry.initialBackoffMs }}",
+                    "retry.max.backoff.ms": "{{ .Values.connectors.githubSource.retry.maxBackoffMs }}"
+                  }
+                }'
+  {{- end }}

@@ -1,0 +1,72 @@
+{{- if .Values.kafkaConnect.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-connect
+  namespace: {{ include "github-events-platform.namespace" . }}
+  labels:
+    {{- include "github-events-platform.labels" . | nindent 4 }}
+    app: kafka-connect
+spec:
+  replicas: {{ .Values.kafkaConnect.replicas }}
+  selector:
+    matchLabels:
+      app: kafka-connect
+  template:
+    metadata:
+      labels:
+        app: kafka-connect
+    spec:
+      containers:
+        - name: kafka-connect
+          image: {{ .Values.kafkaConnect.image | quote }}
+          imagePullPolicy: {{ .Values.kafkaConnect.imagePullPolicy }}
+          ports:
+            - containerPort: 8083
+          env:
+            - name: CONNECT_BOOTSTRAP_SERVERS
+              value: kafka:9092
+            - name: CONNECT_REST_PORT
+              value: "8083"
+            - name: CONNECT_GROUP_ID
+              value: github-events-connect-group
+            - name: CONNECT_CONFIG_STORAGE_TOPIC
+              value: github-events-connect-configs
+            - name: CONNECT_OFFSET_STORAGE_TOPIC
+              value: github-events-connect-offsets
+            - name: CONNECT_STATUS_STORAGE_TOPIC
+              value: github-events-connect-status
+            - name: CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR
+              value: "1"
+            - name: CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR
+              value: "1"
+            - name: CONNECT_STATUS_STORAGE_REPLICATION_FACTOR
+              value: "1"
+            - name: CONNECT_KEY_CONVERTER
+              value: {{ .Values.kafkaConnect.converters.key | quote }}
+            - name: CONNECT_VALUE_CONVERTER
+              value: {{ .Values.kafkaConnect.converters.value | quote }}
+            - name: CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE
+              value: {{ .Values.kafkaConnect.converters.schemasEnable | quote }}
+            - name: CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE
+              value: {{ .Values.kafkaConnect.converters.schemasEnable | quote }}
+            - name: CONNECT_REST_ADVERTISED_HOST_NAME
+              value: kafka-connect
+            - name: CONNECT_PLUGIN_PATH
+              value: {{ .Values.kafkaConnect.pluginPath | quote }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-connect
+  namespace: {{ include "github-events-platform.namespace" . }}
+  labels:
+    {{- include "github-events-platform.labels" . | nindent 4 }}
+    app: kafka-connect
+spec:
+  selector:
+    app: kafka-connect
+  ports:
+    - port: {{ .Values.kafkaConnect.service.port }}
+      targetPort: 8083
+  {{- end }}

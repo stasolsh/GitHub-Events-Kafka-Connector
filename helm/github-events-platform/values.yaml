@@ -1,0 +1,70 @@
+namespaceOverride: ""
+
+kafka:
+  enabled: true
+  image: apache/kafka:3.9.0
+  replicas: 1
+  service:
+    port: 9092
+
+kafkaConnect:
+  enabled: true
+  image: github-events-kafka-connector:1.0.0
+  imagePullPolicy: Never
+  replicas: 1
+  service:
+    port: 8083
+  pluginPath: /usr/share/java,/usr/share/confluent-hub-components
+  converters:
+    key: org.apache.kafka.connect.json.JsonConverter
+    value: org.apache.kafka.connect.json.JsonConverter
+    schemasEnable: "false"
+
+elasticsearch:
+  enabled: true
+  image: docker.elastic.co/elasticsearch/elasticsearch:8.14.1
+  replicas: 1
+  service:
+    port: 9200
+  javaOpts: "-Xms512m -Xmx512m"
+
+kibana:
+  enabled: true
+  image: docker.elastic.co/kibana/kibana:8.14.1
+  replicas: 1
+  service:
+    port: 5601
+
+connectors:
+  githubSource:
+    enabled: true
+    name: github-events-source
+    owner: stasolsh
+    repo: github-events-kafka-connector
+    token: ""
+    topic: github.events
+    pollIntervalMs: "30000"
+    retry:
+      maxAttempts: "3"
+      initialBackoffMs: "1000"
+      maxBackoffMs: "10000"
+
+  elasticsearchSink:
+    enabled: true
+    name: github-events-elasticsearch-sink
+    topics: github.events
+    maxRetries: "10"
+    retryBackoffMs: "1000"
+    errors:
+      tolerance: all
+      retryTimeout: "300000"
+      retryDelayMaxMs: "60000"
+      logEnable: "true"
+      logIncludeMessages: "true"
+      dlqTopic: github.events.dlq
+      dlqReplicationFactor: "1"
+
+jobs:
+  curlImage: curlimages/curl:latest
+  githubSourceSleepSeconds: 20
+  elasticsearchSinkSleepSeconds: 30
