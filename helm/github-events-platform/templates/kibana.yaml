@@ -1,0 +1,43 @@
+{{- if .Values.kibana.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+  namespace: {{ include "github-events-platform.namespace" . }}
+  labels:
+    {{- include "github-events-platform.labels" . | nindent 4 }}
+    app: kibana
+spec:
+  replicas: {{ .Values.kibana.replicas }}
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+        - name: kibana
+          image: {{ .Values.kibana.image | quote }}
+          ports:
+            - containerPort: 5601
+          env:
+            - name: ELASTICSEARCH_HOSTS
+              value: http://elasticsearch:9200
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana
+  namespace: {{ include "github-events-platform.namespace" . }}
+  labels:
+    {{- include "github-events-platform.labels" . | nindent 4 }}
+    app: kibana
+spec:
+  selector:
+    app: kibana
+  ports:
+    - port: {{ .Values.kibana.service.port }}
+      targetPort: 5601
+  {{- end }}
