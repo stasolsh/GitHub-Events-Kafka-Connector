@@ -11,7 +11,7 @@
 [![Issues](https://img.shields.io/github/issues/stasolsh/github-events-kafka-connector)](https://github.com/stasolsh/github-events-kafka-connector/issues)
 [![Stars](https://img.shields.io/github/stars/stasolsh/github-events-kafka-connector)](https://github.com/stasolsh/github-events-kafka-connector/stargazers)
 [![Forks](https://img.shields.io/github/forks/stasolsh/github-events-kafka-connector)](https://github.com/stasolsh/github-events-kafka-connector/network)
-[![Last Commit](https://img.shields.io/github/last-commit/stasolsh/github-events-kafka-connector)](https://github.com/stasolsh/github-events-kafka-connector/commits/main)
+[![Last Commit](https://img.shields.io/github/last-commit/stasolsh/github-events-kafka-connector)](https://github.com/stasolsh/github-events-kafka-connector/commits/master)
 [![Open PRs](https://img.shields.io/github/issues-pr/stasolsh/github-events-kafka-connector)](https://github.com/stasolsh/github-events-kafka-connector/pulls)
 [![Maintenance](https://img.shields.io/badge/Maintained-yes-green.svg)](https://github.com/stasolsh/github-events-kafka-connector)
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
